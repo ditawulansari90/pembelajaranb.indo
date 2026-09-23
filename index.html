@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pembelajaran Bahasa Indonesia - Kalimat Majemuk</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            margin: 0 0 10px 0;
+            font-size: 26px;
+        }
+
+        header p {
+            margin: 0;
+            color: #666;
+            font-size: 15px;
+        }
+
+        /* Video Section Styling */
+        .video-card {
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        video {
+            width: 100%;
+            max-height: 450px;
+            display: block;
+        }
+
+        .video-controls {
+            background: #222;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: #0056b3; }
+        .btn-success { background-color: var(--success-color); color: white; }
+        .btn-success:hover { background-color: #218838; }
+        .btn:disabled { background-color: #ccc !important; cursor: not-allowed; opacity: 0.7; }
+
+        /* Alert Status */
+        .status-alert {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 25px;
+            background-color: #e9ecef;
+            color: #495057;
+            border-left: 5px solid var(--warning-color);
+        }
+
+        .status-alert.unlocked {
+            background-color: #d4edda;
+            color: #155724;
+            border-left-color: var(--success-color);
+        }
+
+        /* Quiz Section Styling */
+        #quiz-section {
+            display: none;
+            border-top: 2px dashed #ddd;
+            padding-top: 25px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            background-color: #eef5ff;
+            padding: 10px 15px;
+            border-left: 4px solid var(--primary-color);
+            margin: 25px 0 15px 0;
+            font-size: 18px;
+            color: #0056b3;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .question-card {
+            background: #fdfdfd;
+            border: 1px solid #e0e0e0;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .question-card p {
+            margin-top: 0;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .options label {
+            display: block;
+            padding: 8px 12px;
+            margin: 6px 0;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .options label:hover {
+            background: #f0f7ff;
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        /* Result Section Styling */
+        #result-card {
+            display: none;
+            background: #eef9f1;
+            border: 2px solid var(--success-color);
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .score-box {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--success-color);
+            margin: 15px 0;
+        }
+
+        .review-card {
+            text-align: left;
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .review-item {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Aplikasi Pembelajaran Bahasa Indonesia</h1>
+        <p>Materi: Kalimat Majemuk (Setara, Bertingkat, dan Berlawanan)</p>
+    </header>
+
+    <!-- Bagian Video Materi -->
+    <div class="video-card">
+        <video id="materiVideo">
+            <source src="materi_kalimat.mp4" type="video/mp4">
+            Browser Anda tidak mendukung pemutaran video ini.
+        </video>
+        <div class="video-controls">
+            <button class="btn btn-primary" onclick="togglePlayPause()">Play / Pause</button>
+            <button class="btn btn-primary" onclick="restartVideo()">Ulang Video</button>
+        </div>
+    </div>
+
+    <!-- Status Pembukaan Kuis -->
+    <div id="statusAlert" class="status-alert">
+        🔒 Simak penjelasan materi pada video hingga selesai untuk membuka 20 Soal Latihan!
+    </div>
+
+    <div style="text-align: center; margin-bottom: 25px;">
+        <button id="startQuizBtn" class="btn btn-success" style="font-size: 18px; padding: 12px 30px;" onclick="showQuiz()" disabled>
+            Mulai Kerjakan Latihan Soal
+        </button>
+    </div>
+
+    <!-- Bagian Kuis 20 Soal -->
+    <div id="quiz-section">
+        <h2 style="text-align: center; color: var(--primary-color);">Latihan Pemahaman Kalimat Majemuk</h2>
+        <p style="text-align: center; color: #666;">Total: 20 Soal | Skor Maksimal: 100 (5 Poin per Soal)</p>
+        
+        <form id="quizForm">
+            <!-- Form Soal akan Diisi secara Dinamis oleh JavaScript -->
+            <div id="questionsContainer"></div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button type="button" class="btn btn-success" style="font-size: 18px; padding: 12px 35px;" onclick="calculateScore()">Kirim Jawaban & Cek Nilai</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bagian Hasil Nilai & Evaluasi -->
+    <div id="result-card">
+        <h2>Hasil Latihan Anda</h2>
+        <div class="score-box" id="scoreDisplay">0</div>
+        <p id="feedbackText" style="font-size: 18px; font-weight: bold;"></p>
+        <hr>
+        <h3>Kunci Jawaban & Pembahasan</h3>
+        <div id="reviewContainer" class="review-card"></div>
+        <button class="btn btn-primary" style="margin-top: 20px;" onclick="location.reload()">Coba Lagi</button>
+    </div>
+</div>
+
+<script>
+    // Data 20 Soal Latihan berdasarkan LKPD
+    const questionsData = [
+        // Bagian A: Menganalisis Jenis Kalimat (5 Soal)
+        { section: "BAGIAN A: Menganalisis Jenis Kalimat Majemuk", text: "1. 'Ayah membaca koran dan Ibu menonton televisi.' Kalimat ini termasuk jenis...", options: ["Kalimat Majemuk Setara", "Kalimat Majemuk Bertingkat", "Kalimat Majemuk Berlawanan"], correct: 0, explanation: "Menggunakan kata hubung 'dan' yang menunjukkan kesetaraan." },
+        { section: "BAGIAN A: Menganalisis Jenis Kalimat Majemuk", text: "2. 'Siti belajar keras agar mendapat nilai bagus.' Kalimat ini termasuk jenis...", options: ["Kalimat Majemuk Setara", "Kalimat Majemuk Bertingkat", "Kalimat Majemuk Berlawanan"], correct: 1, explanation: "Menggunakan kata hubung 'agar' yang menunjukkan hubungan tujuan (bertingkat)." },
+        { section: "BAGIAN A: Menganalisis Jenis Kalimat Majemuk", text: "3. 'Kakak suka berenang, sedangkan adik suka bersepeda.' Kalimat ini termasuk jenis...", options: ["Kalimat Majemuk Setara", "Kalimat Majemuk Bertingkat", "Kalimat Majemuk Berlawanan"], correct: 2, explanation: "Menggunakan kata hubung 'sedangkan' yang menyatakan pertentangan/berlawanan." },
+        { section: "BAGIAN A: Menganalisis Jenis Kalimat Majemuk", text: "4. 'Karena hujan deras, kami tidak jadi berkemah.' Kalimat ini termasuk jenis...", options: ["Kalimat Majemuk Setara", "Kalimat Majemuk Bertingkat", "Kalimat Majemuk Berlawanan"], correct: 1, explanation: "Menggunakan kata hubung 'karena' yang menyatakan hubungan sebab-akibat (bertingkat)." },
+        { section: "BAGIAN A: Menganalisis Jenis Kalimat Majemuk", text: "5. 'Beni rajin belajar tetapi nilainya belum memuaskan.' Kalimat ini termasuk jenis...", options: ["Kalimat Majemuk Setara", "Kalimat Majemuk Bertingkat", "Kalimat Majemuk Berlawanan"], correct: 2, explanation: "Menggunakan kata hubung 'tetapi' yang menyatakan pertentangan dua gagasan." },
+
+        // Bagian B: Melengkapi Kata Hubung (5 Soal)
+        { section: "BAGIAN B: Melengkapi Kata Hubung yang Tepat", text: "6. 'Ani membaca buku _____ Rina menulis cerita.' Kata hubung setara yang tepat adalah...", options: ["karena", "dan", "sehingga"], correct: 1, explanation: "Kata hubung 'dan' menghubungkan dua kegiatan sejajar." },
+        { section: "BAGIAN B: Melengkapi Kata Hubung yang Tepat", text: "7. 'Budi belajar giat _____ ingin menjadi juara kelas.' Kata hubung yang tepat adalah...", options: ["karena", "tetapi", "sedangkan"], correct: 0, explanation: "Kata 'karena' menjelaskan alasan atau penyebab Budi belajar giat." },
+        { section: "BAGIAN B: Melengkapi Kata Hubung yang Tepat", text: "8. 'Kakak suka bakso _____ adik suka soto.' Kata hubung pertentangan yang tepat adalah...", options: ["agar", "sedangkan", "sehingga"], correct: 1, explanation: "Kata 'sedangkan' digunakan untuk mempertentangkan kegemaran kakak dan adik." },
+        { section: "BAGIAN B: Melengkapi Kata Hubung yang Tepat", text: "9. 'Saya akan pergi _____ hujan sudah berhenti.' Kata hubung bertingkat yang tepat adalah...", options: ["tetapi", "ketika", "melainkan"], correct: 1, explanation: "Kata 'ketika' menyatakan hubungan waktu." },
+        { section: "BAGIAN B: Melengkapi Kata Hubung yang Tepat", text: "10. 'Dita suka matematika _____ IPA.' Kata hubung yang tepat adalah...", options: ["dan", "karena", "sehingga"], correct: 0, explanation: "Kata 'dan' menyambungkan dua mata pelajaran pilihan Dita." },
+
+        // Bagian C: Induk & Anak Kalimat / Pemahaman Konsep (5 Soal)
+        { section: "BAGIAN C: Pemahaman Konsep & Struktur Kalimat", text: "11. Jenis kalimat majemuk yang terdiri atas induk kalimat dan anak kalimat adalah...", options: ["Kalimat Majemuk Setara", "Kalimat Majemuk Bertingkat", "Kalimat Majemuk Berlawanan"], correct: 1, explanation: "Kalimat bertingkat memiliki kedudukan klausa yang tidak sejajar (induk dan anak kalimat)." },
+        { section: "BAGIAN C: Pemahaman Konsep & Struktur Kalimat", text: "12. Manakah kata hubung yang khusus menandakan hubungan pertentangan?", options: ["dan / atau", "karena / sehingga", "tetapi / namun"], correct: 2, explanation: "Kata 'tetapi' dan 'namun' menyatakan pertentangan." },
+        { section: "BAGIAN C: Pemahaman Konsep & Struktur Kalimat", text: "13. Pada kalimat 'Rano dapat menghafal rute jalan dengan cepat karena ia anak yang cerdas', bagian yang merupakan INDUK KALIMAT adalah...", options: ["Rano dapat menghafal rute jalan dengan cepat", "karena ia anak yang cerdas", "menghafal rute jalan"], correct: 0, explanation: "Induk kalimat dapat berdiri sendiri tanpa kata hubung." },
+        { section: "BAGIAN C: Pemahaman Konsep & Struktur Kalimat", text: "14. Ciri utama dari kalimat majemuk setara adalah...", options: ["Memiliki anak kalimat", "Kedudukan kedua kalimat sama penting/sederajat", "Menggunakan kata hubung 'karena'"], correct: 1, explanation: "Kedua kalimat tunggalnya bernilai sejajar atau sederajat." },
+        { section: "BAGIAN C: Pemahaman Konsep & Struktur Kalimat", text: "15. Manakah yang BUKAN merupakan kata hubung kalimat majemuk bertingkat?", options: ["karena", "sehingga", "tetapi"], correct: 2, explanation: "Kata 'tetapi' adalah kata hubung pertentangan/berlawanan, bukan bertingkat." },
+
+        // Bagian D: Soal HOTS / Analisis Kasus (5 Soal)
+        { section: "BAGIAN D: Soal Analisis (HOTS)", text: "16. Manakah kalimat berikut yang merupakan contoh kalimat majemuk bertingkat?", options: ["Rina dan Sinta belajar bersama.", "Karena hujan, kami tidak jadi berangkat.", "Ayah bekerja tetapi Ibu memasak."], correct: 1, explanation: "Menggunakan kata hubung 'karena' yang menandakan hubungan bertingkat." },
+        { section: "BAGIAN D: Soal Analisis (HOTS)", text: "17. Gabungkan kalimat 'Rano suka membaca' dan 'Wuri suka menulis' menjadi kalimat majemuk setara yang benar!", options: ["Rano suka membaca dan Wuri suka menulis.", "Rano suka membaca karena Wuri suka menulis.", "Rano suka membaca sehingga Wuri suka menulis."], correct: 0, explanation: "Kata hubung 'dan' menggabungkan dua aktivitas setara." },
+        { section: "BAGIAN D: Soal Analisis (HOTS)", text: "18. 'Radi menyukai sepak bola ... bulu tangkis.' Kata hubung setara yang paling tepat adalah...", options: ["dan", "karena", "sehingga"], correct: 0, explanation: "Kata 'dan' paling pas untuk menggabungkan dua cabang olahraga." },
+        { section: "BAGIAN D: Soal Analisis (HOTS)", text: "19. 'Dodi rajin, tetapi Doni malas.' Kalimat tersebut menyatakan hubungan...", options: ["Sebab-Akibat", "Pertentangan / Berlawanan", "Kesetaraan"], correct: 1, explanation: "Menunjukkan pertentangan sifat antara Dodi dan Doni." },
+        { section: "BAGIAN D: Soal Analisis (HOTS)", text: "20. 'Siti belajar dengan rajin agar memperoleh nilai yang baik.' Kalimat ini termasuk jenis...", options: ["Kalimat Majemuk Setara", "Kalimat Majemuk Bertingkat", "Kalimat Majemuk Berlawanan"], correct: 1, explanation: "Kata 'agar' menyatakan tujuan sehingga termasuk kalimat majemuk bertingkat." }
+    ];
+
+    const video = document.getElementById('materiVideo');
+    const startQuizBtn = document.getElementById('startQuizBtn');
+    const statusAlert = document.getElementById('statusAlert');
+
+    // Kontrol Video
+    function togglePlayPause() {
+        if (video.paused) {
+            video.play();
+        } else {
+            video.pause();
+        }
+    }
+
+    function restartVideo() {
+        video.currentTime = 0;
+        video.play();
+    }
+
+    // Deteksi Video Selesai
+    video.onended = function() {
+        startQuizBtn.disabled = false;
+        statusAlert.classList.add('unlocked');
+        statusAlert.innerHTML = "✅ Selamat! Anda telah menyelesaikan video materi. Silakan klik tombol di bawah untuk memulai latihan.";
+    };
+
+    // Tampilkan Kuis
+    function showQuiz() {
+        document.getElementById('quiz-section').style.display = 'block';
+        startQuizBtn.style.display = 'none';
+        renderQuestions();
+        window.scrollTo({ top: document.getElementById('quiz-section').offsetTop - 20, behavior: 'smooth' });
+    }
+
+    // Render 20 Soal ke HTML
+    function renderQuestions() {
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = '';
+
+        let currentSection = '';
+
+        questionsData.forEach((q, index) => {
+            if (q.section !== currentSection) {
+                currentSection = q.section;
+                const sectionHeader = document.createElement('div');
+                sectionHeader.className = 'section-title';
+                sectionHeader.innerText = currentSection;
+                container.appendChild(sectionHeader);
+            }
+
+            const card = document.createElement('div');
+            card.className = 'question-card';
+
+            let optionsHTML = '';
+            q.options.forEach((opt, optIdx) => {
+                optionsHTML += `
+                    <label>
+                        <input type="radio" name="q${index}" value="${optIdx}"> ${String.fromCharCode(65 + optIdx)}. ${opt}
+                    </label>
+                `;
+            });
+
+            card.innerHTML = `
+                <p>${q.text}</p>
+                <div class="options">${optionsHTML}</div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // Hitung Skor & Tampilkan Review
+    function calculateScore() {
+        let score = 0;
+        let reviewHTML = '';
+
+        for (let i = 0; i < questionsData.length; i++) {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const q = questionsData[i];
+
+            if (selected) {
+                const userAns = parseInt(selected.value);
+                if (userAns === q.correct) {
+                    score += 5; // Masing-masing soal bernilai 5 poin
+                    reviewHTML += `<div class="review-item" style="color: green;">
+                        <strong>Soal ${i+1}: BENAR</strong><br>${q.text}<br><em>Jawaban Anda: ${q.options[userAns]}</em>
+                    </div>`;
+                } else {
+                    reviewHTML += `<div class="review-item" style="color: red;">
+                        <strong>Soal ${i+1}: SALAH</strong><br>${q.text}<br>
+                        <em>Jawaban Anda: ${q.options[userAns]}</em><br>
+                        <span style="color: #333;">Jawaban Benar: <strong>${q.options[q.correct]}</strong> (${q.explanation})</span>
+                    </div>`;
+                }
+            } else {
+                reviewHTML += `<div class="review-item" style="color: orange;">
+                    <strong>Soal ${i+1}: TIDAK DIJAWAB</strong><br>${q.text}<br>
+                    <span style="color: #333;">Jawaban Benar: <strong>${q.options[q.correct]}</strong> (${q.explanation})</span>
+                </div>`;
+            }
+        }
+
+        // Tampilkan Tampilan Hasil
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-card').style.display = 'block';
+        document.getElementById('scoreDisplay').innerText = score;
+
+        let feedback = '';
+        if (score >= 85) {
+            feedback = "🎉 Sangat Baik! Kamu sudah menguasai materi Kalimat Majemuk dengan sempurna!";
+        } else if (score >= 70) {
+            feedback = "👍 Baik! Kamu sudah memahami materi dengan baik, terus tingkatkan!";
+        } else {
+            feedback = "📚 Perlu Belajar Lagi! Tonton ulang video materi di atas dan coba latihan kembali ya.";
+        }
+        document.getElementById('feedbackText').innerText = feedback;
+        document.getElementById('reviewContainer').innerHTML = reviewHTML;
+
+        window.scrollTo({ top: document.getElementById('result-card').offsetTop - 20, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
