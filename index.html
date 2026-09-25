@@ -29,6 +29,7 @@
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
         }
 
         header {
@@ -48,6 +49,25 @@
             margin: 0;
             color: #666;
             font-size: 15px;
+        }
+
+        .identity-card {
+            background: #eef5ff;
+            border: 2px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+            background-color: #fff;
         }
 
         /* Video Section Styling */
@@ -182,6 +202,14 @@
             margin: 15px 0;
         }
 
+        .send-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px dashed var(--success-color);
+            margin: 20px 0;
+        }
+
         .review-card {
             text-align: left;
             margin-top: 20px;
@@ -206,9 +234,38 @@
         <p>Materi: Kalimat Majemuk (Setara, Bertingkat, dan Berlawanan)</p>
     </header>
 
+    <!-- IDENTITAS SISWA (DROPDOWN 17 SISWA) -->
+    <div class="identity-card" id="identitySection">
+        <h3 style="margin-top:0; color: var(--primary-color);">Identitas Siswa</h3>
+        <label><b>Pilih Nama Kamu:</b></label>
+        <select id="inputNama">
+            <option value="">-- Pilih Nama Siswa --</option>
+            <option value="Ahmad Bibi Prianto">Ahmad Bibi Prianto</option>
+            <option value="Ahmad Ragil Setiawan">Ahmad Ragil Setiawan</option>
+            <option value="Ahmad Aidillah">Ahmad Aidillah</option>
+            <option value="An Nisa Alimah">An Nisa Alimah</option>
+            <option value="Azahra Radya Utami">Azahra Radya Utami</option>
+            <option value="Fatkhul Mahdi Mubarok">Fatkhul Mahdi Mubarok</option>
+            <option value="Gibran Albyananda Putra">Gibran Albyananda Putra</option>
+            <option value="Muhammad Dandiansyah">Muhammad Dandiansyah</option>
+            <option value="Muhammad Irawan">Muhammad Irawan</option>
+            <option value="Muhammad Rava Azka Putra">Muhammad Rava Azka Putra</option>
+            <option value="Munawarah Annisa Rahma">Munawarah Annisa Rahma</option>
+            <option value="Nafisa Nur Adila Sari">Nafisa Nur Adila Sari</option>
+            <option value="Naila Lailatul Zahwa">Naila Lailatul Zahwa</option>
+            <option value="Rangga Shyura">Rangga Shyura</option>
+            <option value="Silfa Ananta Nur Afifah">Silfa Ananta Nur Afifah</option>
+            <option value="Widya Erlin Sa'diyah">Widya Erlin Sa'diyah</option>
+            <option value="Yusep Maumali">Yusep Maumali</option>
+        </select>
+
+        <label><b>Kelas:</b></label>
+        <input type="text" id="inputKelas" value="Kelas 5" placeholder="Masukkan Kelas">
+    </div>
+
     <!-- Bagian Video Materi -->
     <div class="video-card">
-        <video id="materiVideo">
+        <video id="materiVideo" preload="metadata">
             <source src="materi_kalimat.mp4" type="video/mp4">
             Browser Anda tidak mendukung pemutaran video ini.
         </video>
@@ -235,7 +292,6 @@
         <p style="text-align: center; color: #666;">Total: 20 Soal | Skor Maksimal: 100 (5 Poin per Soal)</p>
         
         <form id="quizForm">
-            <!-- Form Soal akan Diisi secara Dinamis oleh JavaScript -->
             <div id="questionsContainer"></div>
             
             <div style="text-align: center; margin-top: 30px;">
@@ -248,7 +304,19 @@
     <div id="result-card">
         <h2>Hasil Latihan Anda</h2>
         <div class="score-box" id="scoreDisplay">0</div>
+        <p id="studentInfoDisplay" style="font-size: 16px; font-weight: bold; color: #555;"></p>
         <p id="feedbackText" style="font-size: 18px; font-weight: bold;"></p>
+
+        <!-- BOX SETOR NILAI KE GOOGLE SHEETS GURU -->
+        <div class="send-box">
+            <h3 style="margin-top:0; color: var(--success-color);">Setorkan Nilai ke Google Sheets Guru</h3>
+            <p style="color:#555; margin-bottom:15px;">Klik tombol di bawah ini untuk mengirimkan laporan hasil kerja kamu:</p>
+            <button id="btnKirimGuru" class="btn btn-success" style="font-size: 18px; padding: 12px 30px; width: 100%;" onclick="kirimKeGuru()">
+                🚀 Kirim Laporan Nilai ke Guru
+            </button>
+            <p id="statusKirim" style="font-weight: bold; margin-top: 12px; min-height: 20px;"></p>
+        </div>
+
         <hr>
         <h3>Kunci Jawaban & Pembahasan</h3>
         <div id="reviewContainer" class="review-card"></div>
@@ -257,6 +325,9 @@
 </div>
 
 <script>
+    // LINK GOOGLE APPS SCRIPT REKAP GURU
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzXZQcWGKAYLbz9X9O2_-Qs4mIlvtf9M0xlMa-0ZwxuRBmoE9dhjmXDyGjEUAxMpEHe/exec";
+
     // Data 20 Soal Latihan berdasarkan LKPD
     const questionsData = [
         // Bagian A: Menganalisis Jenis Kalimat (5 Soal)
@@ -291,6 +362,7 @@
     const video = document.getElementById('materiVideo');
     const startQuizBtn = document.getElementById('startQuizBtn');
     const statusAlert = document.getElementById('statusAlert');
+    let totalScoreGlobal = 0;
 
     // Kontrol Video
     function togglePlayPause() {
@@ -313,8 +385,15 @@
         statusAlert.innerHTML = "✅ Selamat! Anda telah menyelesaikan video materi. Silakan klik tombol di bawah untuk memulai latihan.";
     };
 
-    // Tampilkan Kuis
+    // Tampilkan Kuis (Validasi Nama)
     function showQuiz() {
+        const nama = document.getElementById('inputNama').value;
+        if(!nama) {
+            alert('Pilih Nama Siswa terlebih dahulu di bagian atas!');
+            document.getElementById('inputNama').focus();
+            return;
+        }
+
         document.getElementById('quiz-section').style.display = 'block';
         startQuizBtn.style.display = 'none';
         renderQuestions();
@@ -369,7 +448,7 @@
             if (selected) {
                 const userAns = parseInt(selected.value);
                 if (userAns === q.correct) {
-                    score += 5; // Masing-masing soal bernilai 5 poin
+                    score += 5;
                     reviewHTML += `<div class="review-item" style="color: green;">
                         <strong>Soal ${i+1}: BENAR</strong><br>${q.text}<br><em>Jawaban Anda: ${q.options[userAns]}</em>
                     </div>`;
@@ -388,10 +467,16 @@
             }
         }
 
+        totalScoreGlobal = score;
+
         // Tampilkan Tampilan Hasil
         document.getElementById('quiz-section').style.display = 'none';
         document.getElementById('result-card').style.display = 'block';
-        document.getElementById('scoreDisplay').innerText = score;
+        document.getElementById('scoreDisplay').innerText = totalScoreGlobal;
+
+        const namaSiswa = document.getElementById('inputNama').value;
+        const kelasSiswa = document.getElementById('inputKelas').value;
+        document.getElementById('studentInfoDisplay').innerText = `Siswa: ${namaSiswa} | ${kelasSiswa}`;
 
         let feedback = '';
         if (score >= 85) {
@@ -405,6 +490,48 @@
         document.getElementById('reviewContainer').innerHTML = reviewHTML;
 
         window.scrollTo({ top: document.getElementById('result-card').offsetTop - 20, behavior: 'smooth' });
+    }
+
+    // FUNGSI KIRIM NILAI KE GOOGLE SHEETS GURU
+    function kirimKeGuru() {
+        const nama = document.getElementById('inputNama').value;
+        const kelas = document.getElementById('inputKelas').value;
+        const status = document.getElementById("statusKirim");
+        const btnKirim = document.getElementById("btnKirimGuru");
+
+        if (!nama) {
+            alert("Pilih nama siswa terlebih dahulu!");
+            return;
+        }
+
+        status.style.color = "blue";
+        status.innerText = "Sedang mengirim data ke guru...";
+        btnKirim.disabled = true;
+
+        const payload = {
+            namaSiswa: nama,
+            kelas: kelas,
+            mataPelajaran: "Bahasa Indonesia",
+            namaTugas: "LKPD Kalimat Majemuk",
+            nilai: totalScoreGlobal
+        };
+
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(() => {
+            status.style.color = "green";
+            status.innerText = "✅ Berhasil! Nilai sudah masuk ke rekap Google Sheets guru.";
+            btnKirim.disabled = false;
+        })
+        .catch(err => {
+            status.style.color = "red";
+            status.innerText = "❌ Gagal mengirim. Periksa koneksi internet.";
+            btnKirim.disabled = false;
+        });
     }
 </script>
 
